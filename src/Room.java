@@ -50,7 +50,6 @@ public class Room {
         this.available = available;
     }
 
-    // --- Methods ---
     public void printInfo() {
         System.out.println(
                 "Room " + roomNumber +
