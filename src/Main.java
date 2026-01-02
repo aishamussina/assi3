@@ -1,56 +1,39 @@
+import java.util.ArrayList;
+import java.util.Comparator;
+
 public class Main {
 
     public static void main(String[] args) {
 
-        Room room1 = new Room(101, "Single", 15000, true);
-        Room room2 = new Room(102, "Double", 25000, false);
+        ArrayList<Room> rooms = new ArrayList<>();
 
+        rooms.add(new SingleRoom(101, 15000, true));
+        rooms.add(new DoubleRoom(102, 25000, false));
+        rooms.add(new SingleRoom(103, 14000, true));
 
-        Guest guest1 = new Guest("Aisha", 18, "+77001234567");
-        Guest guest2 = new Guest("Ali", 21, "+77007654321");
-
-
-        Booking booking1 = new Booking(guest1, room1, 3);
-        Booking booking2 = new Booking(guest2, room2, 2);
-
-
-        System.out.println("=== ROOMS ===");
-        room1.printInfo();
-        room2.printInfo();
-
-        System.out.println("\n=== GUESTS ===");
-        guest1.printInfo();
-        guest2.printInfo();
-
-        System.out.println("\n=== BOOKINGS ===");
-        booking1.printInfo();
-        booking2.printInfo();
-
-
-        System.out.println("\n=== BOOKING PRICE COMPARISON ===");
-
-        if (booking1.calculateTotalPrice() > booking2.calculateTotalPrice()) {
-            System.out.println("Booking 1 is more expensive.");
-        } else if (booking1.calculateTotalPrice() < booking2.calculateTotalPrice()) {
-            System.out.println("Booking 2 is more expensive.");
-        } else {
-            System.out.println("Both bookings cost the same.");
+        System.out.println("=== ALL ROOMS ===");
+        for (Room room : rooms) {
+            System.out.println(room);
         }
 
-
-        System.out.println("\n=== LOOP THROUGH ROOMS ===");
-
-        Room[] rooms = { room1, room2 };
-        int availableCount = 0;
-
-        for (int i = 0; i < rooms.length; i++) {
-            rooms[i].printInfo();
-
-            if (rooms[i].isAvailable()) {
-                availableCount++;
+        System.out.println("\n=== AVAILABLE ROOMS (FILTER) ===");
+        for (Room room : rooms) {
+            if (room.isAvailable()) {
+                System.out.println(room);
             }
         }
 
-        System.out.println("Available rooms: " + availableCount);
+        System.out.println("\n=== SEARCH ROOM 102 ===");
+        for (Room room : rooms) {
+            if (room.getRoomNumber() == 102) {
+                System.out.println("Found: " + room);
+            }
+        }
+
+        System.out.println("\n=== SORT BY PRICE ===");
+        rooms.sort(Comparator.comparingDouble(Room::getPricePerNight));
+        for (Room room : rooms) {
+            System.out.println(room);
+        }
     }
 }
