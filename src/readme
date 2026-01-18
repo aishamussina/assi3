@@ -1,0 +1,141 @@
+Hotel Reservation System – Project Plan
+1. Project Structure
+Number of classes: 6
+Classes and purpose:
+Room – abstract base class for all rooms, contains room number, price, and availability
+SingleRoom – subclass of Room, represents single rooms
+DoubleRoom – subclass of Room, represents double rooms
+Guest – stores guest information (name, age, phone)
+Booking – stores booking information for a guest in a room for a certain number of nights
+Main – demonstrates program functionality: creating objects, filtering, searching, and sorting
+
+Encapsulation, Inheritance, and Polymorphism
+Encapsulation:
+All fields in Room, Guest, and Booking are private.
+Access is through getters and setters.
+
+private String name;
+public String getName() { return name; }
+public void setName(String name) { this.name = name; }
+
+Inheritance:
+SingleRoom and DoubleRoom inherit from Room.
+They reuse common fields and methods from Room, reducing code repetition.
+Polymorphism:
+The abstract method getRoomType() in Room is overridden in SingleRoom and DoubleRoom.
+This allows the program to handle all rooms the same way, while their behavior differs.
+Example:\
+
+@Override
+public String getRoomType() {
+    return "Single"; // SingleRoom
+}
+@Override
+public String getRoomType() {
+    return "Double"; // DoubleRoom
+}
+
+
+Overloaded Methods (Overload)
+In the Booking class, there are multiple constructors demonstrating method overloading:
+
+public Booking() { } // Default constructor
+public Booking(Guest guest, Room room, int nights) { ... } // Overloaded constructor
+
+Overridden Methods (Override)
+In Room:
+toString() – prints room information
+equals() – compares rooms by number
+hashCode() – provides unique hash for collections
+
+@Override
+public String toString() { ... }
+@Override
+public boolean equals(Object o) { ... }
+@Override
+public int hashCode() { ... }
+
+Summary: Overriding these methods helps to print rooms nicely, compare them correctly, and work well in lists or sets.
+
+
+Data Pool: Filtering, Searching, and Sorting
+Data pool: all rooms are stored in an ArrayList<Room>.
+Filtering: show only available rooms:
+
+Summary
+
+Project shows encapsulation, inheritance, polymorphism, method overloading and overriding.
+Rooms are stored in a data pool (ArrayList) with filtering, searching, and sorting.
+The program is easy to extend: you can add new room types, more guest info, or additional booking features.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Scanner; // импортируем Scanner
+
+public class Main {
+
+    public static void main(String[] args) {
+
+        ArrayList<Room> rooms = new ArrayList<>();
+
+        rooms.add(new SingleRoom(101, 15000, true));
+        rooms.add(new DoubleRoom(102, 25000, false));
+        rooms.add(new SingleRoom(103, 14000, true));
+
+        System.out.println("=== ALL ROOMS ===");
+        for (Room room : rooms) {
+            System.out.println(room);
+        }
+
+        System.out.println("\n=== AVAILABLE ROOMS (FILTER) ===");
+        for (Room room : rooms) {
+            if (room.isAvailable()) {
+                System.out.println(room);
+            }
+        }
+
+        // Создаём Scanner для ввода с консоли
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("\nEnter room number to search: ");
+        int searchNumber = scanner.nextInt(); // читаем число
+
+        System.out.println("\n=== SEARCH ROOM " + searchNumber + " ===");
+        boolean found = false; // флаг для проверки найдено ли
+        for (Room room : rooms) {
+            if (room.getRoomNumber() == searchNumber) {
+                System.out.println("Found: " + room);
+                found = true;
+            }
+        }
+        if (!found) {
+            System.out.println("Room not found.");
+        }
+
+        System.out.println("\n=== SORT BY PRICE ===");
+        rooms.sort(Comparator.comparingDouble(Room::getPricePerNight));
+        for (Room room : rooms) {
+            System.out.println(room);
+        }
+
+        scanner.close(); // закрываем Scanner
+    }
+}
+
