@@ -72,6 +72,28 @@ The program is easy to extend: you can add new room types, more guest info, or a
 
 
 
+# Assignment 3
+
+This project demonstrates JDBC connection to PostgreSQL and basic CRUD operations.
+
+## Features
+- Java JDBC connection (PostgreSQL)
+- Two tables: guests and rooms
+- CRUD operations:
+  - Create (add guest / room)
+  - Read (view guests)
+  - Update (update guest phone)
+  - Delete (delete guest)
+
+## Technologies
+- Java
+- PostgreSQL
+- JDBC
+- IntelliJ IDEA
+
+## How to run
+1. Run MainDB.java
+2. Data will be inserted, updated and displayed in console.
 
 
 
@@ -85,57 +107,4 @@ The program is easy to extend: you can add new room types, more guest info, or a
 
 
 
-
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Scanner; // импортируем Scanner
-
-public class Main {
-
-    public static void main(String[] args) {
-
-        ArrayList<Room> rooms = new ArrayList<>();
-
-        rooms.add(new SingleRoom(101, 15000, true));
-        rooms.add(new DoubleRoom(102, 25000, false));
-        rooms.add(new SingleRoom(103, 14000, true));
-
-        System.out.println("=== ALL ROOMS ===");
-        for (Room room : rooms) {
-            System.out.println(room);
-        }
-
-        System.out.println("\n=== AVAILABLE ROOMS (FILTER) ===");
-        for (Room room : rooms) {
-            if (room.isAvailable()) {
-                System.out.println(room);
-            }
-        }
-
-        // Создаём Scanner для ввода с консоли
-        Scanner scanner = new Scanner(System.in);
-        System.out.print("\nEnter room number to search: ");
-        int searchNumber = scanner.nextInt(); // читаем число
-
-        System.out.println("\n=== SEARCH ROOM " + searchNumber + " ===");
-        boolean found = false; // флаг для проверки найдено ли
-        for (Room room : rooms) {
-            if (room.getRoomNumber() == searchNumber) {
-                System.out.println("Found: " + room);
-                found = true;
-            }
-        }
-        if (!found) {
-            System.out.println("Room not found.");
-        }
-
-        System.out.println("\n=== SORT BY PRICE ===");
-        rooms.sort(Comparator.comparingDouble(Room::getPricePerNight));
-        for (Room room : rooms) {
-            System.out.println(room);
-        }
-
-        scanner.close(); // закрываем Scanner
-    }
-}
 

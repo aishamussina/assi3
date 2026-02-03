@@ -1,12 +1,10 @@
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.*;
 
 public class GuestDAO {
 
-    public void addGuest(Guest guest) {
-        String sql = "INSERT INTO guests(name, age, phone) VALUES (?, ?, ?)";
+    public int addGuest(Guest guest) {
+
+        String sql = "INSERT INTO guests(name, age, phone) VALUES (?, ?, ?) RETURNING id";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -14,21 +12,29 @@ public class GuestDAO {
             ps.setString(1, guest.getName());
             ps.setInt(2, guest.getAge());
             ps.setString(3, guest.getPhone());
-            ps.executeUpdate();
 
-            System.out.println("Guest added");
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    int id = rs.getInt("id");
+                    System.out.println("Guest added. id = " + id);
+                    return id;
+                }
+            }
 
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (SQLException e) {
+            System.out.println("Add guest error (maybe duplicate phone): " + e.getMessage());
         }
+
+        return -1;
     }
 
     public void getAllGuests() {
-        String sql = "SELECT * FROM guests";
+
+        String sql = "SELECT id, name, age, phone FROM guests ORDER BY id";
 
         try (Connection conn = DBConnection.getConnection();
-             Statement st = conn.createStatement();
-             ResultSet rs = st.executeQuery(sql)) {
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
                 System.out.println(
@@ -39,41 +45,53 @@ public class GuestDAO {
                 );
             }
 
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (SQLException e) {
+            System.out.println("Read error: " + e.getMessage());
         }
     }
 
     public void updateGuestPhone(int id, String phone) {
-        String sql = "UPDATE guests SET phone=? WHERE id=?";
+
+        String sql = "UPDATE guests SET phone = ? WHERE id = ?";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, phone);
             ps.setInt(2, id);
-            ps.executeUpdate();
 
-            System.out.println("Guest updated");
+            int rows = ps.executeUpdate();
 
-        } catch (Exception e) {
-            e.printStackTrace();
+            if (rows > 0) {
+                System.out.println("Guest updated (id = " + id + ")");
+            } else {
+                System.out.println("No guest found with id = " + id);
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Update error: " + e.getMessage());
         }
     }
 
     public void deleteGuest(int id) {
-        String sql = "DELETE FROM guests WHERE id=?";
+
+        String sql = "DELETE FROM guests WHERE id = ?";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, id);
-            ps.executeUpdate();
 
-            System.out.println("Guest deleted");
+            int rows = ps.executeUpdate();
 
-        } catch (Exception e) {
-            e.printStackTrace();
+            if (rows > 0) {
+                System.out.println("Guest deleted (id = " + id + ")");
+            } else {
+                System.out.println("No guest found with id = " + id);
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Delete error: " + e.getMessage());
         }
     }
 }

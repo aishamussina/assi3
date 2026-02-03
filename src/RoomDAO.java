@@ -1,12 +1,15 @@
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 public class RoomDAO {
 
     public void addRoom(Room room) {
 
-        String sql = "INSERT INTO rooms(room_number, room_type, price_per_night, available) " +
-                "VALUES (?, ?, ?, ?)";
+        String sql =
+                "INSERT INTO rooms(room_number, room_type, price_per_night, available) " +
+                        "VALUES (?, ?, ?, ?) " +
+                        "ON CONFLICT (room_number) DO NOTHING";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -16,12 +19,16 @@ public class RoomDAO {
             ps.setDouble(3, room.getPricePerNight());
             ps.setBoolean(4, room.isAvailable());
 
-            ps.executeUpdate();
+            int rows = ps.executeUpdate();
 
-            System.out.println("Room added");
+            if (rows > 0) {
+                System.out.println("Room added: " + room.getRoomNumber());
+            } else {
+                System.out.println("Room already exists: " + room.getRoomNumber());
+            }
 
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (SQLException e) {
+            System.out.println("Room insert error: " + e.getMessage());
         }
     }
 }
